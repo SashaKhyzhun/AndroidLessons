@@ -7,9 +7,9 @@ import android.widget.GridView;
 
 public class MainActivity extends Activity {
 
-    String[] data = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"};
+    String[] data = {"Салаты", "Пица", "Горячее", "Суши", "Десерт", "f", "g", "h", "i", "j", "k"};
 
-    GridView gvMain;
+    GridView gridView;
     ArrayAdapter<String> adapter;
 
 
@@ -20,19 +20,20 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         adapter = new ArrayAdapter<String>(this, R.layout.item, R.id.tvText, data);
-        gvMain = (GridView) findViewById(R.id.gvMain);
-        gvMain.setAdapter(adapter);
+        gridView = (GridView) findViewById(R.id.gridview);
+        gridView.setAdapter(adapter);
+        //gridView.setAdapter(new ImageAdapter(this));
         adjustGridView();
     }
 
 
     private void adjustGridView() {
-        // gvMain.setNumColumns(3);
+        gridView.setNumColumns(1);
         // gvMain.setColumnWidth(50);
         // gvMain.setVerticalSpacing(5);
         // gvMain.setHorizontalSpacing(5);
         // gvMain.setStretchMode(GridView.NO_STRETCH);
-        gvMain.setNumColumns(GridView.AUTO_FIT);
+        //gvMain.setNumColumns(GridView.AUTO_FIT);
     }
 
 }
