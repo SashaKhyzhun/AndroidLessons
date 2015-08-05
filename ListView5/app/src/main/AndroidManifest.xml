@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.khyzhun.sasha.listview4"
-    android:installLocation="preferExternal">
+    package="com.khyzhun.sasha.listview5" >
 
     <application
         android:allowBackup="true"
