@@ -31,19 +31,16 @@ public class ListViewCustomAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        // TODO Auto-generated method stub
         return title.length;
     }
 
     @Override
     public Object getItem(int position) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public long getItemId(int position) {
-        // TODO Auto-generated method stub
         return 0;
     }
 
@@ -56,7 +53,6 @@ public class ListViewCustomAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // TODO Auto-generated method stub
 
         ViewHolder holder;
         if(convertView==null)
