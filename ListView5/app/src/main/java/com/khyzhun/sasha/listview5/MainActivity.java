@@ -15,7 +15,6 @@ public class MainActivity extends Activity implements OnItemClickListener {
     ListView lview3;
     ListViewCustomAdapter adapter;
     private ArrayList<Object> itemList;
-    private ItemBean bean;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,7 +57,7 @@ public class MainActivity extends Activity implements OnItemClickListener {
     // Add one item into the Array List
     public void AddObjectToList(int image, String title, String desc)
     {
-        bean = new ItemBean();
+        ItemBean bean = new ItemBean();
         bean.setDescription(desc);
         bean.setImage(image);
         bean.setTitle(title);
