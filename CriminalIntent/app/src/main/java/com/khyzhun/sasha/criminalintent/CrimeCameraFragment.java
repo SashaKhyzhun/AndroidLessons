@@ -2,6 +2,7 @@ package com.khyzhun.sasha.criminalintent;
 
 import android.annotation.TargetApi;
 import android.hardware.Camera;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -107,7 +108,7 @@ public class CrimeCameraFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        //openCamera();
+        openCamera();
     }
 
     @Override
@@ -123,13 +124,13 @@ public class CrimeCameraFragment extends Fragment {
         }
     }
 
-    /*private void openCamera() {
+    private void openCamera() {
         if (AndroidVersionHelper.isGingerbreadOrHigher()) {
             camera = Camera.open(0);
         } else {
             camera = Camera.open();
         }
-    }*/
+    }
 
 
     private void wireTakePictureButton(View view) {

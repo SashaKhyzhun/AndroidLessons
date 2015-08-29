@@ -11,76 +11,68 @@ import java.util.UUID;
  */
 public class Crime {
 
+    private UUID id;
+    private String title;
+    private Date discoveredOn;
+    private boolean solved;
+
     private static final String JSON_ID = "id";
     private static final String JSON_TITLE = "title";
+    private static final String JSON_DISCOVERED_ON = "discovered_on";
     private static final String JSON_SOLVED = "solved";
-    private static final String JSON_DATE = "date";
-
-    private UUID mId;
-    private String mTitle;
-    private boolean mSolved;
-    private Date mDate = new Date();
-
 
     public Crime() {
-        mId = UUID.randomUUID();
+        id = UUID.randomUUID();
+        discoveredOn = new Date();
     }
 
     public Crime(JSONObject json) throws JSONException {
-        mId = UUID.fromString(json.getString(JSON_ID));
-        mTitle = json.getString(JSON_TITLE);
-        mSolved = json.getBoolean(JSON_SOLVED);
-        mDate = new Date(json.getLong(JSON_DATE));
+        this.id = UUID.fromString(json.getString(JSON_ID));
+        this.title = json.getString(JSON_TITLE);
+        this.solved = json.getBoolean(JSON_SOLVED);
+        this.discoveredOn = new Date(json.getLong(JSON_DISCOVERED_ON));
     }
-
-
-    public JSONObject toJSON() throws JSONException {
-        JSONObject json = new JSONObject();
-        json.put(JSON_ID, mId.toString());
-        json.put(JSON_TITLE, mTitle);
-        json.put(JSON_SOLVED, mSolved);
-        json.put(JSON_DATE, mDate);
-        return json;
-    }
-
-
-    public String toString() {
-        return mTitle;
-    }
-
 
     public UUID getId() {
-        return mId;
+        return this.id;
     }
-
-
-    public String getTitle() {
-        return mTitle;
-    }
-
 
     public void setTitle(String title) {
-        mTitle = title;
+        this.title = title;
     }
 
-
-    public Date getDate() {
-        return mDate;
+    public String getTitle() {
+        return this.title;
     }
 
-
-    public void setDate(Date date) {
-        mDate = date;
+    public Date getDiscoveredOn() {
+        return discoveredOn;
     }
 
+    public void setDiscoveredOn(Date discoveredOn) {
+        this.discoveredOn = discoveredOn;
+    }
 
     public boolean isSolved() {
-        return mSolved;
+        return solved;
     }
-
 
     public void setSolved(boolean solved) {
-        mSolved = solved;
+        this.solved = solved;
     }
 
+    @Override
+    public String toString() {
+        return title;
+    }
+
+    public JSONObject toJSON() throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(JSON_ID, this.id.toString());
+        jsonObject.put(JSON_TITLE, this.title);
+        jsonObject.put(JSON_SOLVED, this.solved);
+        jsonObject.put(JSON_DISCOVERED_ON, this.discoveredOn.getTime());
+
+        return jsonObject;
+    }
 }

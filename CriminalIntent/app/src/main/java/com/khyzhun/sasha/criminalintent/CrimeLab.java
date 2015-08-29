@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -11,71 +12,68 @@ import java.util.UUID;
  */
 public class CrimeLab {
 
+    private static CrimeLab instance;
+    private Context context;
+    private List<Crime> crimes;
+
     private static final String TAG = "CrimeLab";
     private static final String FILENAME = "crimes.json";
 
-    private ArrayList<Crime> mCrimes;
-    private CriminalIntentJSONSerializer mSerializer;
+    private CrimeLab(Context appContext) {
+        this.context = appContext;
+        loadCrimes();
+    }
 
-    private static CrimeLab sCrimeLab;
-    private Context mAppContext;
-
-
-    public CrimeLab(Context appContext) {
-        mAppContext = appContext;
-        mSerializer = new CriminalIntentJSONSerializer(mAppContext, FILENAME);
-
+    private void loadCrimes() {
+        CriminalIntentJSONSerializer crimeSerializer = new CriminalIntentJSONSerializer(this.context, FILENAME);
         try {
-            mCrimes = mSerializer.loadCrimes();
+            this.crimes = crimeSerializer.loadCrimes();
         } catch (Exception e) {
-            mCrimes = new ArrayList<Crime>();
-            Log.e(TAG, "Error loading crimes: ", e);
+            crimes = new ArrayList<Crime>();
+            Log.d(TAG, "There was an error loading the crimes.", e);
         }
     }
 
+    public void addCrime(Crime crime) {
+        this.crimes.add(crime);
+    }
 
-    public static CrimeLab get(Context c) {
-        if (sCrimeLab == null) {
-            sCrimeLab = new CrimeLab(c.getApplicationContext());
+    public void deleteCrime(Crime crime) {
+        this.crimes.remove(crime);
+    }
+
+    public static CrimeLab getInstance(Context appContext) {
+        if (instance == null) {
+            instance = new CrimeLab(appContext.getApplicationContext());
         }
-        return sCrimeLab;
+
+        return instance;
+    }
+
+    public List<Crime> getCrimes() {
+        return crimes;
     }
 
 
-    public void addCrime(Crime c) {
-        mCrimes.add(c);
-    }
-
-
-    public void deleteCrime(Crime c) {
-        mCrimes.remove(c);
-    }
-
-
-    public boolean saveCrimes() {
-        try {
-            mSerializer.saveCrimes(mCrimes);
-            Log.d(TAG, "crimes saved to file");
-            return true;
-        } catch (Exception e){
-            Log.d(TAG, "Error saving crimes: ", e);
-            return false;
+    public Crime getCrime(UUID id) {
+        for(Crime crime : crimes) {
+            if (crime.getId().equals(id)) {
+                return crime;
+            }
         }
-    }
 
-
-    public ArrayList<Crime> getCrimes() {
-        return mCrimes;
-    }
-
-
-    public Crime getCrime(UUID id){
-        for (Crime c : mCrimes) {
-            if (c.getId().equals(id))
-                return c;
-        }
         return null;
     }
 
-
+    public boolean saveCrimes() {
+        CriminalIntentJSONSerializer crimeSerializer = new CriminalIntentJSONSerializer(this.context, FILENAME);
+        try {
+            Log.d(TAG, "Saving crimes...");
+            crimeSerializer.saveCrimes(this.crimes);
+            return true;
+        } catch (Exception e) {
+            Log.d(TAG, "There was an error saving the crimes", e);
+            return false;
+        }
+    }
 }

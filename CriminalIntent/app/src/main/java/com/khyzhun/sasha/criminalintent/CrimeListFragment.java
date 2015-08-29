@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
@@ -22,240 +23,227 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Sasha on 11.08.15.
  */
 public class CrimeListFragment extends ListFragment {
 
-    private static final int REQUEST_CRIME = 1;
+    private List<Crime> crimes;
     private static final String TAG = "CrimeListFragment";
-    private ArrayList<Crime> mCrimes;
-    private boolean mSubtitleVisible;
-
+    private boolean subtitleVisible;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        subtitleVisible = true;
+        setRetainInstance(true);
         setHasOptionsMenu(true);
         getActivity().setTitle(R.string.crimes_title);
-        mCrimes = CrimeLab.get(getActivity()).getCrimes();
+        crimes = CrimeLab.getInstance(getActivity()).getCrimes();
 
-        CrimeAdapter adapter = new CrimeAdapter(mCrimes);
-        setListAdapter(adapter);
-
-        setRetainInstance(true);
-        mSubtitleVisible = false;
-
+        CrimeAdapter crimeArrayAdapter = new CrimeAdapter(crimes);
+        setListAdapter(crimeArrayAdapter);
     }
-
-
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        //Полученые объекта Crime от адаптера
-        Crime c = ((CrimeAdapter)getListAdapter()).getItem(position);
-        Log.d(TAG , c.getTitle() + " was clicked");
-        //Запускаем CrimePagerActivity с объектом Crime
-        Intent i = new Intent(getActivity(), CrimePagerActivity.class);
-        i.putExtra(CrimeFragment.EXTRA_CRIME_ID, c.getId());
-        startActivityForResult(i, REQUEST_CRIME);
-
-    }
-
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CRIME) {
-            //Obrobotka rezyltata
-            Log.d(TAG, "Дред, че за хуйня???");
-        }
-    }
-
-
-
-    @TargetApi(11)
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup parent,
-                             Bundle saveInstanceState) {
-
-        View v = super.onCreateView(inflater, parent, saveInstanceState);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            if(mSubtitleVisible) {
-                getActivity().getActionBar().setSubtitle(R.string.subtitle);
-            }
-        }
-
-        ListView listView = (ListView)v.findViewById(android.R.id.list);
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            // Контекстные меню для Froyo и Gingerbread
-            registerForContextMenu(listView);
-        } else {
-            // Контекстные меню для Honeycomb и выше
-            listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-
-            listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
-                @Override
-                public void onItemCheckedStateChanged(ActionMode mode, int position,
-                                                      long id, boolean checked) {
-                    // Метод является обязательным, но не используется в этой реализации
-                }
-
-                @Override
-                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                    // Методы ActionMode.Callback
-                    MenuInflater inflater = mode.getMenuInflater();
-                    inflater.inflate(R.menu.crime_list_item_context, menu);
-                    return true;
-                }
-
-                @Override
-                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                    return false;
-                    // Метод является обязательным, но не используется в этой реализации
-                }
-
-                @Override
-                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                    switch (item.getItemId()) {
-                        case R.id.menu_item_delete_crime:
-                            CrimeAdapter adapter = (CrimeAdapter) getListAdapter();
-                            CrimeLab crimeLab = CrimeLab.get(getActivity());
-                            for (int i = adapter.getCount() - 1; i >= 0; i--) {
-                                if (getListView().isItemChecked(i)) {
-                                    crimeLab.deleteCrime(adapter.getItem(i));
-                                }
-                            }
-                            mode.finish();
-                            adapter.notifyDataSetChanged();
-                            return true;
-                        default:
-                            return false;
-                    }
-                }
-
-                @Override
-                public void onDestroyActionMode(ActionMode mode) {
-                    // Метод является обязательным, но не используется в этой реализации
-                }
-            });
-        }
-        return v;
-    }
-
-
-    public void returnResult() {
-        getActivity().setResult(Activity.RESULT_OK, null);
-    }
-
-
-
-    private class CrimeAdapter extends ArrayAdapter<Crime> {
-        public CrimeAdapter(ArrayList<Crime> crimes) {
-            super (getActivity(), 0, crimes);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            //Если мы не получили представление, заполняем его
-            if (convertView == null) {
-                convertView = getActivity().getLayoutInflater()
-                        .inflate(R.layout.list_item_crime, null);
-            }
-
-            //Настройка представления для объекта Crime
-            Crime c = getItem(position);
-
-            TextView titleTextView = (TextView) convertView.findViewById(R.id.crime_list_item_titleTextView);
-            titleTextView.setText(c.getTitle());
-
-            TextView dataTextView = (TextView)convertView.findViewById(R.id.crime_list_item_dateTextView);
-            dataTextView.setText(c.getDate().toString());
-
-            CheckBox solvedCheckBox = (CheckBox)convertView.findViewById(R.id.crime_list_item_solvedCheckBox);
-            solvedCheckBox.setChecked(c.isSolved());
-
-            return convertView;
-
-        }
-
-    }
-
-
 
     @Override
     public void onResume() {
         super.onResume();
+
         ((CrimeAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
+    @Override
+    public View onCreateView(LayoutInflater layoutInflater, ViewGroup parent, Bundle savedInstanceState) {
+        View view = super.onCreateView(layoutInflater, parent, savedInstanceState);
 
+        if (subtitleVisible) {
+            ((ActionBarActivity)getActivity()).getSupportActionBar().setSubtitle(R.string.subtitle);
+        }
+
+        ListView listView = (ListView)view.findViewById(android.R.id.list);
+        wireListView(listView);
+        return view;
+    }
+
+    private void wireListView(ListView listView) {
+        if (AndroidVersionHelper.isHoneycombOrHigher()) {
+            configureListViewForMultiChoiceMode(listView);
+        } else {
+            registerForContextMenu(listView);
+        }
+
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void configureListViewForMultiChoiceMode(ListView listView) {
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override
+            public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                MenuInflater menuInflater = actionMode.getMenuInflater();
+                menuInflater.inflate(R.menu.crime_list_item_context, menu);
+
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                switch(menuItem.getItemId()) {
+                    case R.id.menu_item_delete_crime:
+                        CrimeAdapter crimeAdapter = (CrimeAdapter)getListAdapter();
+                        CrimeLab crimeLab = CrimeLab.getInstance(getActivity());
+                        for (int i= crimeAdapter.getCount()-1; i>=0; i--) {
+                            if (getListView().isItemChecked(i)) {
+                                crimeLab.deleteCrime(crimeAdapter.getItem(i));
+                            }
+                        }
+                        actionMode.finish();
+                        crimeAdapter.notifyDataSetChanged();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode actionMode) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });
+    }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.fragment_crime_list, menu);
-        MenuItem showSubtitle = menu.findItem(R.id.menu_item_show_subtitle);
-        if (mSubtitleVisible && showSubtitle != null) {
-            showSubtitle.setTitle(R.string.hide_subtitle);
+    public void onListItemClick(ListView listView, View view, int position, long id) {
+        startCrimePagerActivity(position);
+    }
+
+    private void startCrimePagerActivity(int position) {
+        Crime crime = ((CrimeAdapter)getListAdapter()).getItem(position);
+        Intent intent = new Intent(getActivity(), CrimePagerActivity.class);
+        intent.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        super.onCreateOptionsMenu(menu, menuInflater);
+        menuInflater.inflate(R.menu.fragment_crime_list, menu);
+        setMenuItemSubtitle(menu);
+    }
+
+    private void setMenuItemSubtitle(Menu menu) {
+        MenuItem subtitleMenuItem = menu.findItem(R.id.menu_item_show_subtitle);
+        if (subtitleVisible && subtitleMenuItem != null) {
+            subtitleMenuItem.setTitle(R.string.subtitle);
         }
     }
 
-
-
-    @TargetApi(11)
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
             case R.id.menu_item_new_crime:
                 Crime crime = new Crime();
-                CrimeLab.get(getActivity()).addCrime(crime);
-                Intent i = new Intent(getActivity(), CrimePagerActivity.class);
-                i.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
-                startActivityForResult(i, 0);
+                CrimeLab.getInstance(getActivity()).addCrime(crime);
+
+                Intent intent = new Intent(getActivity(), CrimePagerActivity.class);
+                intent.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
+                startActivityForResult(intent, 0);
+
                 return true;
             case R.id.menu_item_show_subtitle:
-                if (getActivity().getActionBar().getSubtitle() == null) {
-                    getActivity().getActionBar().setSubtitle(R.string.subtitle);
-                    mSubtitleVisible = true;
-                    item.setTitle(R.string.hide_subtitle);
+                if (((ActionBarActivity)getActivity()).getSupportActionBar().getSubtitle() == null) {
+                    subtitleVisible = true;
+                    ((ActionBarActivity)getActivity()).getSupportActionBar().setSubtitle(R.string.subtitle);
+                    menuItem.setTitle(R.string.hide_subtitle);
+
                 } else {
-                    getActivity().getActionBar().setSubtitle(null);
-                    mSubtitleVisible = false;
-                    item.setTitle(R.string.show_subtitle);
+                    subtitleVisible = false;
+                    ((ActionBarActivity)getActivity()).getSupportActionBar().setSubtitle(null);
+                    menuItem.setTitle(R.string.show_subtitle);
                 }
-                return true;
             default:
-                return super.onOptionsItemSelected(item);
+                return super.onOptionsItemSelected(menuItem);
         }
     }
 
-
-
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        getActivity().getMenuInflater().inflate(R.menu.crime_list_item_context, menu);
+    public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+        getActivity().getMenuInflater().inflate(R.menu.crime_list_item_context, contextMenu);
     }
 
-
-
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+    public boolean onContextItemSelected(MenuItem menuItem) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuItem.getMenuInfo();
         int position = info.position;
-        CrimeAdapter adapter = (CrimeAdapter)getListAdapter();
-        Crime crime = adapter.getItem(position);
+        CrimeAdapter crimeAdapter = (CrimeAdapter)getListAdapter();
+        Crime crime = crimeAdapter.getItem(position);
 
-        switch (item.getItemId()) {
+        switch (menuItem.getItemId()) {
             case R.id.menu_item_delete_crime:
-                CrimeLab.get(getActivity()).deleteCrime(crime);
-                adapter.notifyDataSetChanged();
+                CrimeLab.getInstance(getActivity()).deleteCrime(crime);
+                crimeAdapter.notifyDataSetChanged();
                 return true;
         }
-        return super.onContextItemSelected(item);
+        return super.onContextItemSelected(menuItem);
+    }
+
+    private class CrimeAdapter extends ArrayAdapter<Crime> {
+
+        public CrimeAdapter(List<Crime> crimes) {
+            super(getActivity(), 0, crimes);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = createView();
+            }
+
+            Crime crime = getItem(position);
+
+            populateTitle(convertView, crime);
+            populateDate(convertView, crime);
+            populateSolved(convertView, crime);
+
+            return convertView;
+        }
+
+        private void populateSolved(View convertView, Crime crime) {
+            CheckBox solvedCheckBox = (CheckBox)convertView.findViewById(R.id.crime_list_item_solvedCheckBox);
+            solvedCheckBox.setChecked(crime.isSolved());
+        }
+
+        private void populateDate(View convertView, Crime crime) {
+            TextView dateTextView = (TextView)convertView.findViewById(R.id.crime_list_item_dateTextView);
+            SimpleDateFormat dateFormatter = getSimpleDateFormat();
+            dateTextView.setText(dateFormatter.format(crime.getDiscoveredOn()));
+        }
+
+        private SimpleDateFormat getSimpleDateFormat() {
+            return new SimpleDateFormat("MM/dd/yyyy");
+        }
+
+        private void populateTitle(View convertView, Crime crime) {
+            TextView titleTextView = (TextView)convertView.findViewById(R.id.crime_list_item_titleTextView);
+            titleTextView.setText(crime.getTitle());
+        }
+
+        private View createView() {
+            return ((ActionBarActivity)getActivity()).getLayoutInflater().inflate(R.layout.list_item_crime, null);
+        }
     }
 }
