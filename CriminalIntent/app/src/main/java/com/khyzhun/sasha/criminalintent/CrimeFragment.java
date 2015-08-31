@@ -12,6 +12,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,7 +34,9 @@ public class CrimeFragment extends Fragment {
 
     public static final String EXTRA_CRIME_ID = "com.khyzhun.sasha.criminalintent.crime_id";
     public static final int REQUEST_DATE = 0;
+    public static final int REQUEST_PHOTO = 1;
 
+    private static final String TAG = "CrimeFragment";
     private static final String DIALOG_DATE = "date";
 
 
@@ -86,13 +89,14 @@ public class CrimeFragment extends Fragment {
         return  view;
     }
 
+
     private void wirePhotoButton(View view) {
         photoButton = (ImageButton)view.findViewById(R.id.crime_imageButton);
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), CrimeCameraActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_PHOTO);
             }
         });
 
@@ -101,10 +105,12 @@ public class CrimeFragment extends Fragment {
         }
     }
 
+
     private boolean cameraFeatureIsUnavailable() {
         PackageManager packageManager = getActivity().getPackageManager();
         return !packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
     }
+
 
     private void enableHomeButton() {
         if (hasParentActivity()) {
@@ -112,27 +118,36 @@ public class CrimeFragment extends Fragment {
         }
     }
 
+
     private boolean hasParentActivity() {
         return NavUtils.getParentActivityName(getActivity()) != null;
     }
 
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (resultCode != Activity.RESULT_OK) {
-            return;
-        }
+        if (resultCode != Activity.RESULT_OK) return;
 
         if (requestCode == REQUEST_DATE) {
             Date crimeDate = (Date)intent.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             crime.setDiscoveredOn(crimeDate);
             SimpleDateFormat simpleDateFormat = getSimpleDateFormat();
             updateDate(simpleDateFormat);
+        } else if (requestCode == REQUEST_PHOTO) {
+            // Создание нового объекта Photo и связывание его с Сrime
+            String filename = intent
+                    .getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
+            if (filename != null) {
+                Log.i(TAG, "filename: " + filename);
+            }
         }
     }
+
 
     private void updateDate(SimpleDateFormat simpleDateFormat) {
         dateButton.setText(simpleDateFormat.format(crime.getDiscoveredOn()));
     }
+
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -144,6 +159,7 @@ public class CrimeFragment extends Fragment {
         return fragment;
     }
 
+
     private void wireSolvedCheckBox(View view) {
         solvedCheckBox = (CheckBox)view.findViewById(R.id.crime_solved);
         solvedCheckBox.setChecked(crime.isSolved());
@@ -154,6 +170,7 @@ public class CrimeFragment extends Fragment {
             }
         });
     }
+
 
     private void wireDateButton(View view) {
         SimpleDateFormat dateFormatter = getSimpleDateFormat();
@@ -170,9 +187,11 @@ public class CrimeFragment extends Fragment {
         });
     }
 
+
     private SimpleDateFormat getSimpleDateFormat() {
         return new SimpleDateFormat("MM/dd/yyyy");
     }
+
 
     private void wireTitleField(View view) {
         titleField = (EditText)view.findViewById(R.id.crime_title);
@@ -194,4 +213,6 @@ public class CrimeFragment extends Fragment {
             }
         });
     }
+
+
 }

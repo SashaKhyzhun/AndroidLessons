@@ -1,7 +1,9 @@
 package com.khyzhun.sasha.criminalintent;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +20,8 @@ import java.util.UUID;
 public class CrimeCameraFragment extends Fragment {
 
     private static final String TAG = "CrimeCameraFragment";
+    public static final String EXTRA_PHOTO_FILENAME =
+            "com.khyzhun.sasha.criminalintent.photo_filename";
 
     private Camera camera;
     private SurfaceView surfaceView;
@@ -98,6 +102,8 @@ public class CrimeCameraFragment extends Fragment {
                 Camera.Parameters parameters = camera.getParameters();
                 Camera.Size size = getBestSupportedSize(parameters.getSupportedPreviewSizes());
                 parameters.setPreviewSize(size.width, size.height);
+                size = getBestSupportedSize(parameters.getSupportedPreviewSizes());
+                parameters.setPictureSize(size.width, size.height);
                 camera.setParameters(parameters);
             }
 
@@ -128,7 +134,6 @@ public class CrimeCameraFragment extends Fragment {
     };
 
     private Camera.PictureCallback mJpegCallback = new Camera.PictureCallback() {
-
         public void onPictureTaken(byte[] data, Camera camera) {
             //создание имени файла;
             String filename = UUID.randomUUID().toString() + ".jpg";
@@ -151,7 +156,11 @@ public class CrimeCameraFragment extends Fragment {
             }
 
             if (success) {
-                Log.i(TAG, "JPEG saved at " + filename);
+                Intent i = new Intent();
+                i.putExtra(EXTRA_PHOTO_FILENAME, filename);
+                getActivity().setResult(Activity.RESULT_OK, i);
+            } else {
+                getActivity().setResult(Activity.RESULT_CANCELED);
             }
             getActivity().finish();
         }
