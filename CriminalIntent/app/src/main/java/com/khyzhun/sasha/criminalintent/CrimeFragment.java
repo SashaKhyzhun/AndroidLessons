@@ -22,6 +22,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,6 +46,7 @@ public class CrimeFragment extends Fragment {
     private Button dateButton;
     private CheckBox solvedCheckBox;
     private ImageButton photoButton;
+    private ImageView mPhotoView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,6 +87,7 @@ public class CrimeFragment extends Fragment {
         wireDateButton(view);
         wireSolvedCheckBox(view);
         wirePhotoButton(view);
+        wirePhotoView(view);
 
         return  view;
     }
@@ -138,7 +141,9 @@ public class CrimeFragment extends Fragment {
             String filename = intent
                     .getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
             if (filename != null) {
-                Log.i(TAG, "filename: " + filename);
+                Photo p = new Photo(filename);
+                //mCrime.setPhoto(p);
+                //Log.i(TAG, "Crime: " + mCrime.getTitle() + "has a photo");
             }
         }
     }
@@ -212,6 +217,11 @@ public class CrimeFragment extends Fragment {
                 //To change body of implemented methods use File | Settings | File Templates.
             }
         });
+    }
+
+
+    private void wirePhotoView (View view) {
+        mPhotoView = (ImageView) view.findViewById(R.id.crime_imageView);
     }
 
 
