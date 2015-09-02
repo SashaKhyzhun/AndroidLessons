@@ -40,6 +40,7 @@ public class CrimeFragment extends Fragment {
 
     private static final String TAG = "CrimeFragment";
     private static final String DIALOG_DATE = "date";
+    private static final String DIALOG_IMAGE = "image";
 
 
     private Crime crime;
@@ -237,6 +238,17 @@ public class CrimeFragment extends Fragment {
 
     private void wirePhotoView (View view) {
         mPhotoView = (ImageView) view.findViewById(R.id.crime_imageView);
+        mPhotoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Photo p = crime.getPhoto();
+                if (p == null) return;
+
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                String path = getActivity().getFileStreamPath(p.getFilename()).getAbsolutePath();
+                ImageFragment.newInstance(path).show(fm, DIALOG_IMAGE);
+            }
+        });
     }
 
 
