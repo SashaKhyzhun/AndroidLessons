@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -127,6 +128,20 @@ public class CrimeFragment extends Fragment {
     }
 
 
+    private void showPhoto() {
+        // Назначение озображения, полученного на основе фотографии
+        Photo p = crime.getPhoto();
+        BitmapDrawable b = null;
+        if (p != null) {
+            String path = getActivity()
+                    .getFileStreamPath(p.getFilename()).getAbsolutePath();
+            b = PictureUtils.setScaleDrawable(getActivity(), path);
+            // TODO: 02.09.2015 "get", a ne "set"
+        }
+        mPhotoView.setImageDrawable(b);
+    }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (resultCode != Activity.RESULT_OK) return;
@@ -142,8 +157,8 @@ public class CrimeFragment extends Fragment {
                     .getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
             if (filename != null) {
                 Photo p = new Photo(filename);
-                //mCrime.setPhoto(p);
-                //Log.i(TAG, "Crime: " + mCrime.getTitle() + "has a photo");
+                crime.setPhoto(p);
+                showPhoto();
             }
         }
     }
@@ -224,5 +239,17 @@ public class CrimeFragment extends Fragment {
         mPhotoView = (ImageView) view.findViewById(R.id.crime_imageView);
     }
 
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        showPhoto();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        PictureUtils.cleanImageView(mPhotoView);
+    }
 
 }
