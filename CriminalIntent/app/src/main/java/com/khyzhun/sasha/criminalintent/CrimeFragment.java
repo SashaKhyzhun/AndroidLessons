@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -50,32 +51,14 @@ public class CrimeFragment extends Fragment {
     private ImageButton photoButton;
     private ImageView mPhotoView;
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         UUID crimeId = (UUID)getArguments().getSerializable(EXTRA_CRIME_ID);
         crime = CrimeLab.getInstance(getActivity()).getCrime(crimeId);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        CrimeLab.getInstance(getActivity()).saveCrimes();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case android.R.id.home:
-                if (hasParentActivity()) {
-                    NavUtils.navigateUpFromSameTask(getActivity());
-                }
-
-                return true;
-            default:
-                return super.onOptionsItemSelected(menuItem);
-        }
     }
 
     @TargetApi(11)
@@ -93,55 +76,6 @@ public class CrimeFragment extends Fragment {
 
         return  view;
     }
-
-
-    private void wirePhotoButton(View view) {
-        photoButton = (ImageButton)view.findViewById(R.id.crime_imageButton);
-        photoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), CrimeCameraActivity.class);
-                startActivityForResult(intent, REQUEST_PHOTO);
-            }
-        });
-
-        if (cameraFeatureIsUnavailable()) {
-            photoButton.setEnabled(false);
-        }
-    }
-
-
-    private boolean cameraFeatureIsUnavailable() {
-        PackageManager packageManager = getActivity().getPackageManager();
-        return !packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
-    }
-
-
-    private void enableHomeButton() {
-        if (hasParentActivity()) {
-            ((ActionBarActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
-
-    private boolean hasParentActivity() {
-        return NavUtils.getParentActivityName(getActivity()) != null;
-    }
-
-
-    private void showPhoto() {
-        // Назначение озображения, полученного на основе фотографии
-        Photo p = crime.getPhoto();
-        BitmapDrawable b = null;
-        if (p != null) {
-            String path = getActivity()
-                    .getFileStreamPath(p.getFilename()).getAbsolutePath();
-            b = PictureUtils.setScaleDrawable(getActivity(), path);
-            // TODO: 02.09.2015 "get", a ne "set"
-        }
-        mPhotoView.setImageDrawable(b);
-    }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -165,10 +99,39 @@ public class CrimeFragment extends Fragment {
     }
 
 
+    /** Others methods **/
+
+    private void showPhoto() {
+        // Назначение озображения, полученного на основе фотографии
+        Photo p = crime.getPhoto();
+        BitmapDrawable b = null;
+        if (p != null) {
+            String path = getActivity()
+                    .getFileStreamPath(p.getFilename()).getAbsolutePath();
+            b = PictureUtils.setScaleDrawable(getActivity(), path);
+            // TODO: 02.09.2015 "get", a ne "set"
+        }
+        mPhotoView.setImageDrawable(b);
+    }
+
+    private boolean cameraFeatureIsUnavailable() {
+        PackageManager packageManager = getActivity().getPackageManager();
+        return !packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
+    }
+
+    private void enableHomeButton() {
+        if (hasParentActivity()) {
+            ((ActionBarActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    private boolean hasParentActivity() {
+        return NavUtils.getParentActivityName(getActivity()) != null;
+    }
+
     private void updateDate(SimpleDateFormat simpleDateFormat) {
         dateButton.setText(simpleDateFormat.format(crime.getDiscoveredOn()));
     }
-
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -180,6 +143,37 @@ public class CrimeFragment extends Fragment {
         return fragment;
     }
 
+    /** List of Getter methods **/
+
+    private SimpleDateFormat getSimpleDateFormat() {
+        return new SimpleDateFormat("MM/dd/yyyy");
+    }
+
+    private String getCrimeReport() {
+        String solvedString = null;
+        if (crime.isSolved()) {
+            solvedString = getString(R.string.crime_report_solved);
+        } else {
+            solvedString = getString(R.string.crime_report_unsolved);
+        }
+
+        String dateFormat = "EEE, MMM dd";
+        String dateString = android.text.format.DateFormat.
+                format(dateFormat, crime.getDiscoveredOn()).toString();
+
+        String suspect = crime.getSuspect();
+        if (suspect == null) {
+            suspect = getString(R.string.crime_report_no_suspect);
+        } else {
+            suspect = getString(R.string.crime_report_solved, suspect);
+        }
+        String report = getString(R.string.crime_report,
+                crime.getTitle(), dateString, solvedString, suspect);
+
+        return report;
+    }
+
+    /** Wire methods **/
 
     private void wireSolvedCheckBox(View view) {
         solvedCheckBox = (CheckBox)view.findViewById(R.id.crime_solved);
@@ -192,6 +186,20 @@ public class CrimeFragment extends Fragment {
         });
     }
 
+    private void wirePhotoButton(View view) {
+        photoButton = (ImageButton)view.findViewById(R.id.crime_imageButton);
+        photoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), CrimeCameraActivity.class);
+                startActivityForResult(intent, REQUEST_PHOTO);
+            }
+        });
+
+        if (cameraFeatureIsUnavailable()) {
+            photoButton.setEnabled(false);
+        }
+    }
 
     private void wireDateButton(View view) {
         SimpleDateFormat dateFormatter = getSimpleDateFormat();
@@ -207,12 +215,6 @@ public class CrimeFragment extends Fragment {
             }
         });
     }
-
-
-    private SimpleDateFormat getSimpleDateFormat() {
-        return new SimpleDateFormat("MM/dd/yyyy");
-    }
-
 
     private void wireTitleField(View view) {
         titleField = (EditText)view.findViewById(R.id.crime_title);
@@ -235,7 +237,6 @@ public class CrimeFragment extends Fragment {
         });
     }
 
-
     private void wirePhotoView (View view) {
         mPhotoView = (ImageView) view.findViewById(R.id.crime_imageView);
         mPhotoView.setOnClickListener(new View.OnClickListener() {
@@ -252,16 +253,39 @@ public class CrimeFragment extends Fragment {
     }
 
 
+    /** LiveCycle methods **/
+
     @Override
     public void onStart() {
         super.onStart();
         showPhoto();
     }
 
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        CrimeLab.getInstance(getActivity()).saveCrimes();
+    }
+
     @Override
     public void onStop() {
         super.onStop();
         PictureUtils.cleanImageView(mPhotoView);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case android.R.id.home:
+                if (hasParentActivity()) {
+                    NavUtils.navigateUpFromSameTask(getActivity());
+                }
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
     }
 
 }
