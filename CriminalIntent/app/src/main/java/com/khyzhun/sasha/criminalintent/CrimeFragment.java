@@ -73,6 +73,7 @@ public class CrimeFragment extends Fragment {
         wireSolvedCheckBox(view);
         wirePhotoButton(view);
         wirePhotoView(view);
+        wireReportButton(view);
 
         return  view;
     }
@@ -143,6 +144,7 @@ public class CrimeFragment extends Fragment {
         return fragment;
     }
 
+
     /** List of Getter methods **/
 
     private SimpleDateFormat getSimpleDateFormat() {
@@ -172,6 +174,7 @@ public class CrimeFragment extends Fragment {
 
         return report;
     }
+
 
     /** Wire methods **/
 
@@ -237,7 +240,7 @@ public class CrimeFragment extends Fragment {
         });
     }
 
-    private void wirePhotoView (View view) {
+    private void wirePhotoView(View view) {
         mPhotoView = (ImageView) view.findViewById(R.id.crime_imageView);
         mPhotoView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -248,6 +251,21 @@ public class CrimeFragment extends Fragment {
                 FragmentManager fm = getActivity().getSupportFragmentManager();
                 String path = getActivity().getFileStreamPath(p.getFilename()).getAbsolutePath();
                 ImageFragment.newInstance(path).show(fm, DIALOG_IMAGE);
+            }
+        });
+    }
+
+    private void wireReportButton(View view) {
+        Button reportButton = (Button)view.findViewById(R.id.crime_reportButton);
+        reportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_TEXT, getCrimeReport());
+                i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
+                i = Intent.createChooser(i, getString(R.string.send_report));
+                startActivity(i);
             }
         });
     }
