@@ -8,6 +8,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBar;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
@@ -65,6 +72,10 @@ public class CrimeListFragment extends ListFragment {
     }
 
 
+    public interface Callbacks {
+        void onCrimeSelected (Crime crime);
+    }
+
     /** Main methods **/
 
     @Override
@@ -102,9 +113,8 @@ public class CrimeListFragment extends ListFragment {
                 Crime crime = new Crime();
                 CrimeLab.getInstance(getActivity()).addCrime(crime);
 
-                Intent intent = new Intent(getActivity(), CrimePagerActivity.class);
-                intent.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
-                startActivityForResult(intent, 0);
+                ((CrimeAdapter)getListAdapter()).notifyDataSetChanged();
+                mCallbacks.onCrimeSelected(crime);
 
                 return true;
             case R.id.menu_item_show_subtitle:
@@ -128,10 +138,6 @@ public class CrimeListFragment extends ListFragment {
         super.onResume();
 
         ((CrimeAdapter)getListAdapter()).notifyDataSetChanged();
-    }
-
-    public interface Callbacks {
-        void onCrimeSelected (Crime crime);
     }
 
     @Override
@@ -195,6 +201,7 @@ public class CrimeListFragment extends ListFragment {
 
     }
 
+
     private void wireListView(ListView listView) {
         if (AndroidVersionHelper.isHoneycombOrHigher()) {
             configureListViewForMultiChoiceMode(listView);
@@ -204,12 +211,14 @@ public class CrimeListFragment extends ListFragment {
 
     }
 
+
     private void setMenuItemSubtitle(Menu menu) {
         MenuItem subtitleMenuItem = menu.findItem(R.id.menu_item_show_subtitle);
         if (subtitleVisible && subtitleMenuItem != null) {
             subtitleMenuItem.setTitle(R.string.subtitle);
         }
     }
+
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void configureListViewForMultiChoiceMode(ListView listView) {
@@ -259,16 +268,21 @@ public class CrimeListFragment extends ListFragment {
         });
     }
 
+
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         startCrimePagerActivity(position);
     }
 
+
     private void startCrimePagerActivity(int position) {
         Crime crime = ((CrimeAdapter)getListAdapter()).getItem(position);
-        Intent intent = new Intent(getActivity(), CrimePagerActivity.class);
-        intent.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
-        startActivity(intent);
+        mCallbacks.onCrimeSelected(crime);
+    }
+
+
+    public void updateUI() {
+        ((CrimeAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
 }

@@ -52,6 +52,7 @@ public class CrimeFragment extends Fragment {
     private ImageButton photoButton;
     private ImageView mPhotoView;
     private Button mSuspectButton;
+    private Callbacks mCallbacks;
 
 
 
@@ -76,7 +77,7 @@ public class CrimeFragment extends Fragment {
         wirePhotoButton(view);
         wirePhotoView(view);
         wireReportButton(view);
-        wireSuspectButtom(view);
+        wireSuspectButton(view);
 
         return  view;
     }
@@ -88,6 +89,7 @@ public class CrimeFragment extends Fragment {
         if (requestCode == REQUEST_DATE) {
             Date crimeDate = (Date)intent.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             mCrime.setDiscoveredOn(crimeDate);
+            mCallbacks.onCrimeUpdated(mCrime);
             SimpleDateFormat simpleDateFormat = getSimpleDateFormat();
             updateDate(simpleDateFormat);
         } else if (requestCode == REQUEST_PHOTO) {
@@ -97,6 +99,7 @@ public class CrimeFragment extends Fragment {
             if (filename != null) {
                 Photo p = new Photo(filename);
                 mCrime.setPhoto(p);
+                mCallbacks.onCrimeUpdated(mCrime);
                 showPhoto();
             }
         } else if (requestCode == REQUEST_CONTACT) {
@@ -121,6 +124,7 @@ public class CrimeFragment extends Fragment {
             c.moveToFirst();
             String suspect = c.getString(0);
             mCrime.setSuspect(suspect);
+            mCallbacks.onCrimeUpdated(mCrime);
             mSuspectButton.setText(suspect);
             c.close();
         }
@@ -171,6 +175,10 @@ public class CrimeFragment extends Fragment {
         return fragment;
     }
 
+    public interface Callbacks {
+        void onCrimeUpdated(Crime crime);
+    }
+
 
     /** List of Getter methods **/
 
@@ -212,6 +220,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mCrime.setSolved(isChecked);
+                mCallbacks.onCrimeUpdated(mCrime);
             }
         });
     }
@@ -258,6 +267,8 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mCrime.setTitle(s.toString());
+                mCallbacks.onCrimeUpdated(mCrime);
+                getActivity().setTitle(mCrime.getTitle());
             }
 
             @Override
@@ -297,7 +308,7 @@ public class CrimeFragment extends Fragment {
         });
     }
 
-    private void wireSuspectButtom(View view) {
+    private void wireSuspectButton(View view) {
         mSuspectButton = (Button)view.findViewById(R.id.crime_suspectButton);
         mSuspectButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -321,7 +332,6 @@ public class CrimeFragment extends Fragment {
         showPhoto();
     }
 
-
     @Override
     public void onPause() {
         super.onPause();
@@ -332,6 +342,17 @@ public class CrimeFragment extends Fragment {
     public void onStop() {
         super.onStop();
         PictureUtils.cleanImageView(mPhotoView);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mCallbacks = (Callbacks)activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
     }
 
     @Override
@@ -347,5 +368,7 @@ public class CrimeFragment extends Fragment {
                 return super.onOptionsItemSelected(menuItem);
         }
     }
+
+
 
 }
