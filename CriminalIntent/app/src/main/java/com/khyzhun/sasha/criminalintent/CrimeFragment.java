@@ -359,9 +359,14 @@ public class CrimeFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case android.R.id.home:
-                if (hasParentActivity()) {
-                    NavUtils.navigateUpFromSameTask(getActivity());
-                }
+                Intent intent = new Intent(getActivity(), CrimeListActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                //finish();
+
+                //if (hasParentActivity()) {
+                    //NavUtils.navigateUpFromSameTask(getActivity());
+                //}
 
                 return true;
             default:
