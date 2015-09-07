@@ -1,5 +1,6 @@
 package sasha.khyzhun.com.remotecontrol;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -9,7 +10,7 @@ import android.support.v7.app.ActionBarActivity;
 /**
  * Created by Sasha on 12.08.15.
  */
-public abstract class SingleFragmentActivity extends ActionBarActivity {
+public abstract class SingleFragmentActivity extends FragmentActivity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
