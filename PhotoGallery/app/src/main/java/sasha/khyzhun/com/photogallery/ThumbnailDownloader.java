@@ -2,13 +2,13 @@ package sasha.khyzhun.com.photogallery;
 
 import android.media.session.MediaSession;
 import android.os.HandlerThread;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
+import android.widget.ImageView;
 
 /**
  * Created by Sasha on 08-Sep-15.
  */
-public class ThumbnailDownloader extends HandlerThread {
+public class ThumbnailDownloader<I> extends HandlerThread {
 
     private static final String TAG = "ThumbnailDownloader";
 
@@ -16,7 +16,7 @@ public class ThumbnailDownloader extends HandlerThread {
         super(TAG);
     }
 
-    public void queueThumbnail(MediaSession.Token token, String url) {
+    public void queueThumbnail(ImageView token, String url) {
         Log.i(TAG, "Got an URL: " + url);
     }
 

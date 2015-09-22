@@ -11,7 +11,6 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -24,7 +23,6 @@ public class PhotoGalleryFragment extends Fragment {
     GridView mGridView;
     ArrayList<GalleryItem> mItems;
     ThumbnailDownloader<ImageView> mThumbnailThread;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,12 +44,12 @@ public class PhotoGalleryFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_photo_gallery, container, false);
         mGridView = (GridView)v.findViewById(R.id.gridView);
+        setupAdapter();
 
         return v;
     }
 
     void setupAdapter() {
-
         if (getActivity() == null || mGridView == null) return;
 
         if (mItems != null) {
@@ -59,7 +57,6 @@ public class PhotoGalleryFragment extends Fragment {
         } else {
             mGridView.setAdapter(null);
         }
-
     }
 
 
@@ -67,9 +64,7 @@ public class PhotoGalleryFragment extends Fragment {
 
         @Override
         protected ArrayList<GalleryItem> doInBackground(Void... params) {
-
             return new FlickrFetchr().fetchItems();
-
         }
 
         @Override
@@ -94,6 +89,8 @@ public class PhotoGalleryFragment extends Fragment {
 
             ImageView imageView = (ImageView)convertView.findViewById(R.id.gallery_item_imageView);
             imageView.setImageResource(R.drawable.brian_up_close);
+            GalleryItem item = getItem(position);
+            mThumbnailThread.queueThumbnail(imageView, item.getmUrl());
 
             return convertView;
         }
