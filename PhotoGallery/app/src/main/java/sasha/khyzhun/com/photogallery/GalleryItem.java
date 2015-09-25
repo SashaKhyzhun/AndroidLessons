@@ -41,4 +41,5 @@ public class GalleryItem {
     public void setmUrl(String mUrl) {
         this.mUrl = mUrl;
     }
+
 }
