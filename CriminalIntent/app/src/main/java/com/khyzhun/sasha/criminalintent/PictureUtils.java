@@ -7,9 +7,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.view.Display;
 import android.widget.ImageView;
 
-/**
- * Created by User on 01.09.2015.
- */
 public class PictureUtils {
     /**
      * Получение объекта в BitmapDrawable по данным локального файла

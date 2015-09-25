@@ -6,7 +6,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 /**
- * Created by Sasha on 24.08.15.
+ * Created by Sasha on 24.08.15
  */
 public class CrimeCameraActivity extends SingleFragmentActivity {
 

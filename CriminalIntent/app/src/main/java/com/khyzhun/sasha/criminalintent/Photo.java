@@ -3,9 +3,6 @@ package com.khyzhun.sasha.criminalintent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by User on 01.09.2015.
- */
 public class Photo {
 
     private static final String JSON_FILENAME = "filename";

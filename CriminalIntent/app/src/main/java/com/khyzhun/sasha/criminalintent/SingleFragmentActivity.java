@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 
 /**
- * Created by Sasha on 12.08.15.
+ * Created by Sasha on 12.08.15
  */
 public abstract class SingleFragmentActivity extends ActionBarActivity {
     /** Called when the activity is first created. */
