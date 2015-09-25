@@ -8,9 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-/**
- * Created by User on 02.09.2015.
- */
+
 public class ImageFragment extends DialogFragment {
 
     public static final String EXTRA_IMAGE_PATH = "com.khyzhun.sasha.criminalintent.image_pat";

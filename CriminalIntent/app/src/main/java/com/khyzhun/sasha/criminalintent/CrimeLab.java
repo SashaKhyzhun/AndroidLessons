@@ -2,14 +2,13 @@ package com.khyzhun.sasha.criminalintent;
 
 import android.content.Context;
 import android.util.Log;
+import org.json.JSONException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Created by Sasha on 11.08.15.
- */
 public class CrimeLab {
 
     private static CrimeLab instance;
@@ -25,7 +24,7 @@ public class CrimeLab {
     }
 
     private void loadCrimes() {
-        CriminalIntentJSONSerializer crimeSerializer = new CriminalIntentJSONSerializer(this.context, FILENAME);
+        CriminalIntentSerializer crimeSerializer = new CriminalIntentSerializer(this.context, FILENAME);
         try {
             this.crimes = crimeSerializer.loadCrimes();
         } catch (Exception e) {
@@ -54,6 +53,7 @@ public class CrimeLab {
         return crimes;
     }
 
+
     public Crime getCrime(UUID id) {
         for(Crime crime : crimes) {
             if (crime.getId().equals(id)) {
@@ -65,7 +65,7 @@ public class CrimeLab {
     }
 
     public boolean saveCrimes() {
-        CriminalIntentJSONSerializer crimeSerializer = new CriminalIntentJSONSerializer(this.context, FILENAME);
+        CriminalIntentSerializer crimeSerializer = new CriminalIntentSerializer(this.context, FILENAME);
         try {
             Log.d(TAG, "Saving crimes...");
             crimeSerializer.saveCrimes(this.crimes);

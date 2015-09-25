@@ -6,15 +6,13 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 
-/**
- * Created by Sasha on 12.08.15
- */
 public abstract class SingleFragmentActivity extends ActionBarActivity {
     /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        setContentView(getLayoutResId());
+        setContentView(R.layout.activity_fragment);
 
         FragmentManager fragManager = getSupportFragmentManager();
         Fragment fragment = fragManager.findFragmentById(R.id.fragmentContainer);
@@ -27,9 +25,4 @@ public abstract class SingleFragmentActivity extends ActionBarActivity {
     }
 
     protected abstract Fragment createFragment();
-
-    protected int getLayoutResId() {
-        return R.layout.activity_fragment;
-    }
-
 }
