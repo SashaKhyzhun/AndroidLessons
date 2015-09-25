@@ -10,27 +10,25 @@ import android.support.v7.app.ActionBarActivity;
 /**
  * Created by Sasha on 08-Sep-15.
  */
-public abstract class SingleFragmentActivity extends ActionBarActivity {
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(getLayoutResId());
-
-        FragmentManager fragManager = getSupportFragmentManager();
-        Fragment fragment = fragManager.findFragmentById(R.id.fragmentContainer);
-        if (fragment == null) {
-            fragment = createFragment();
-            fragManager.beginTransaction()
-                    .add(R.id.fragmentContainer, fragment)
-                    .commit();
-        }
-    }
+public abstract class SingleFragmentActivity extends FragmentActivity {
 
     protected abstract Fragment createFragment();
 
-    protected int getLayoutResId() {
+    protected int getLayoutResId(){
         return R.layout.activity_fragment;
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(getLayoutResId());
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
+        if (fragment == null){
+            fragment = createFragment();
+            fm.beginTransaction()
+                    .add(R.id.fragmentContainer, fragment).
+                    commit();
+        }
+    }
 }

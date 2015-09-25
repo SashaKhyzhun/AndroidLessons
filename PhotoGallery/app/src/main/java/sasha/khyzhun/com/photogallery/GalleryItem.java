@@ -1,45 +1,61 @@
 package sasha.khyzhun.com.photogallery;
 
 /**
- * Created by Dima on 07-Sep-15.
+ * Created by Sasha on 07-Sep-15.
  */
 public class GalleryItem {
 
     private String mCaption;
     private String mId;
     private String mUrl;
+    private String mOwner;
 
+    @Override
     public String toString() {
         return mCaption;
     }
 
-
-    /** List of Getters **/
-
-    public String getmCaption() {
+    /** Getters **/
+    public String getCaption() {
         return mCaption;
     }
 
-    public String getmId() {
+    public String getId() {
         return mId;
     }
 
-    public String getmUrl() {
+    public String getUrl() {
         return mUrl;
     }
 
-    /** List of Setters **/
-
-    public void setmCaption(String mCaption) {
-        this.mCaption = mCaption;
+    public String getPhotoPageUrl(){
+        return "http://www.flickr.com/photos/" + mOwner + "/" + mId;
     }
 
-    public void setmId(String mId) {
-        this.mId = mId;
+    public String getOwner() {
+        return mOwner;
     }
 
-    public void setmUrl(String mUrl) {
-        this.mUrl = mUrl;
+    /** Setters **/
+
+    public void setCaption(String caption) {
+        mCaption = caption;
     }
+
+    public void setId(String id) {
+        mId = id;
+    }
+
+    public void setUrl(String url) {
+        mUrl = url;
+    }
+
+    public void setOwner(String owner) {
+        mOwner = owner;
+    }
+
+
+
+
 
 }
