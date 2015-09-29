@@ -4,7 +4,6 @@ import android.content.Context;
 import android.location.Location;
 
 public class LastLocationLoader extends DataLoader<Location> {
-
     private long mRunId;
 
     public LastLocationLoader(Context context, long runId) {
@@ -16,5 +15,4 @@ public class LastLocationLoader extends DataLoader<Location> {
     public Location loadInBackground() {
         return RunManager.get(getContext()).getLastLocationForRun(mRunId);
     }
-
 }

@@ -4,11 +4,10 @@ import android.content.Context;
 import android.database.Cursor;
 
 public class LocationListCursorLoader extends SQLiteCursorLoader {
+    private  long mRunId;
 
-    private long mRunId;
-
-    public LocationListCursorLoader(Context context, long runId) {
-        super(context);
+    public LocationListCursorLoader(Context c, long runId) {
+        super(c);
         mRunId = runId;
     }
 
@@ -16,5 +15,4 @@ public class LocationListCursorLoader extends SQLiteCursorLoader {
     protected Cursor loadCursor() {
         return RunManager.get(getContext()).queryLocationsForRun(mRunId);
     }
-
 }

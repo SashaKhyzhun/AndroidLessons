@@ -7,21 +7,20 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
 
-public class LocationReceiver extends BroadcastReceiver {
-
+public class LocationReceiver extends BroadcastReceiver{
     private static final String TAG = "LocationReceiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // If you got a Location extra, use it.
-        Location location = intent
+        // If you got a Location extra, use it
+        Location loc = (Location)intent
                 .getParcelableExtra(LocationManager.KEY_LOCATION_CHANGED);
-        if (location != null) {
-            onLocationReceived(context, location);
+        if (loc != null) {
+            onLocationReceived(context, loc);
             return;
         }
 
-        // If you get here, something else has happened
+        // If you got here, something else happened
         if (intent.hasExtra(LocationManager.KEY_PROVIDER_ENABLED)) {
             boolean enabled = intent
                     .getBooleanExtra(LocationManager.KEY_PROVIDER_ENABLED, false);
@@ -29,13 +28,12 @@ public class LocationReceiver extends BroadcastReceiver {
         }
     }
 
-    protected void onLocationReceived(Context context, Location location) {
-        Log.d(TAG, this + " Got location from " + location.getProvider() + ": "
-                + location.getLatitude() + ", " + location.getLongitude());
+    protected void onLocationReceived(Context context, Location loc) {
+        Log.d(TAG, this + " Got location from " + loc.getProvider() + ": "
+                + loc.getLatitude() + ", " + loc.getLongitude());
     }
 
     protected void onProviderEnabledChanged(boolean enabled) {
         Log.d(TAG, "Provider " + (enabled ? "enabled" : "disabled"));
     }
-
 }

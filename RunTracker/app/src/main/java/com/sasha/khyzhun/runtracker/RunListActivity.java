@@ -8,4 +8,5 @@ public class RunListActivity extends SingleFragmentActivity {
     protected Fragment createFragment() {
         return new RunListFragment();
     }
+
 }

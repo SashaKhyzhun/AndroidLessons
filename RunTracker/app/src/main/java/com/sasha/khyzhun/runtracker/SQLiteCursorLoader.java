@@ -4,8 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.content.AsyncTaskLoader;
 
-public abstract class SQLiteCursorLoader extends AsyncTaskLoader<Cursor> {
 
+public abstract class SQLiteCursorLoader extends AsyncTaskLoader<Cursor> {
     private Cursor mCursor;
 
     public SQLiteCursorLoader(Context context) {
@@ -19,7 +19,7 @@ public abstract class SQLiteCursorLoader extends AsyncTaskLoader<Cursor> {
         Cursor cursor = loadCursor();
         if (cursor != null) {
             // Ensure that the content window is filled
-            cursor.getCount(); // 保证数据在发送给主线程之前已加载到内存中
+            cursor.getCount();
         }
         return cursor;
     }
@@ -43,6 +43,7 @@ public abstract class SQLiteCursorLoader extends AsyncTaskLoader<Cursor> {
         if (mCursor != null) {
             deliverResult(mCursor);
         }
+
         if (takeContentChanged() || mCursor == null) {
             forceLoad();
         }
@@ -50,7 +51,7 @@ public abstract class SQLiteCursorLoader extends AsyncTaskLoader<Cursor> {
 
     @Override
     protected void onStopLoading() {
-        // Attempt to cancel the current load task if possible
+        // Attemp to cancel the current load task if possible
         cancelLoad();
     }
 
@@ -65,13 +66,13 @@ public abstract class SQLiteCursorLoader extends AsyncTaskLoader<Cursor> {
     protected void onReset() {
         super.onReset();
 
-        // Ensure the loader is stopped
+        //Ensure the loader is stopped
         onStopLoading();
 
         if (mCursor != null && !mCursor.isClosed()) {
             mCursor.close();
         }
+
         mCursor = null;
     }
-
 }

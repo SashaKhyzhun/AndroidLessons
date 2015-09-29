@@ -5,15 +5,19 @@ import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
+import android.content.Context;
+import android.location.Location;
+import android.util.Log;
+
 public class TrackingLocationReceiver extends LocationReceiver {
 
-    private static final String TAG = "TrackingLocationReceiver";
+    private static final String TAG = "TrackLocationReceiver";
 
-    @SuppressLint("LongLogTag")
     @Override
-    protected void onLocationReceived(Context context, Location location) {
-        Log.i(TAG, "Insert location into database!");
-        RunManager.get(context).insertLocation(location);
+    protected void onLocationReceived(Context context, Location loc) {
+        RunManager.get(context).insertLocation(loc);
+        Log.d(TAG, this + " Got location from " + loc.getProvider() + ": "
+                + loc.getLatitude() + ", " + loc.getLongitude());
     }
 
 }

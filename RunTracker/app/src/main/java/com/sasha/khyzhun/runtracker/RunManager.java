@@ -11,54 +11,51 @@ import com.sasha.khyzhun.runtracker.RunDatabaseHelper.RunCursor;
 import com.sasha.khyzhun.runtracker.RunDatabaseHelper.LocationCursor;
 
 public class RunManager {
-
-    public  static final String ACTION_LOCATION = "com.sasha.khyzhun.runtracker.ACTION_LOCATION";
     private static final String TAG = "RunManager";
+
     private static final String PREFS_FILE = "runs";
     private static final String PREF_CURRENT_RUN_ID = "RunManager.currentRunId";
 
-    private static RunManager sRunManager;
+    public static final String ACTION_LOCATION = "com.sasha.khyzhun.runtracker.ACTION_LOCATION";
 
+    private static RunManager sRunManager;
     private Context mAppContext;
     private LocationManager mLocationManager;
     private RunDatabaseHelper mHelper;
     private SharedPreferences mPrefs;
-    private long mCurrentId;
-
+    private long mCurrentRunId;
 
     // The private constructor forces users to use RunManager.get(Context)
     private RunManager(Context appContext) {
         mAppContext = appContext;
-        mLocationManager = (LocationManager)
-                mAppContext.getSystemService(Context.LOCATION_SERVICE);
+        mLocationManager = (LocationManager)mAppContext
+                .getSystemService(Context.LOCATION_SERVICE);
         mHelper = new RunDatabaseHelper(mAppContext);
         mPrefs = mAppContext.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-        mCurrentId = mPrefs.getLong(PREF_CURRENT_RUN_ID, -1);
+        mCurrentRunId = mPrefs.getLong(PREF_CURRENT_RUN_ID, -1);
     }
 
-    public static RunManager get(Context context) {
+    public static RunManager get(Context c) {
         if (sRunManager == null) {
             // Use the application context to avoid leaking activities
-            sRunManager = new RunManager(context.getApplicationContext());
+            sRunManager = new RunManager(c.getApplicationContext());
         }
         return sRunManager;
     }
 
     private PendingIntent getLocationPendingIntent(boolean shouldCreate) {
-        Log.i(TAG, "getLocationPendingIntent");
         Intent broadcast = new Intent(ACTION_LOCATION);
         int flags = shouldCreate ? 0 : PendingIntent.FLAG_NO_CREATE;
         return PendingIntent.getBroadcast(mAppContext, 0, broadcast, flags);
     }
 
     public void startLocationUpdates() {
-        Log.i(TAG, "startLocationUpdates");
         String provider = LocationManager.GPS_PROVIDER;
 
         // Get the last known location and broadcast it if you have one
         Location lastKnown = mLocationManager.getLastKnownLocation(provider);
         if (lastKnown != null) {
-            // Reset the time to now
+            // Result the time to now
             lastKnown.setTime(System.currentTimeMillis());
             broadcastLocation(lastKnown);
         }
@@ -69,14 +66,12 @@ public class RunManager {
     }
 
     private void broadcastLocation(Location location) {
-        Log.i(TAG, "broadcastLocation");
         Intent broadcast = new Intent(ACTION_LOCATION);
         broadcast.putExtra(LocationManager.KEY_LOCATION_CHANGED, location);
         mAppContext.sendBroadcast(broadcast);
     }
 
     public void stopLocationUpdates() {
-        Log.i(TAG, "stopLocationUpdates");
         PendingIntent pi = getLocationPendingIntent(false);
         if (pi != null) {
             mLocationManager.removeUpdates(pi);
@@ -88,16 +83,27 @@ public class RunManager {
         return getLocationPendingIntent(false) != null;
     }
 
-    public boolean isTrackingRun(Run run) {
-        return run != null && run.getId() == mCurrentId;
-    }
-
     public Run startNewRun() {
-        // Insert a run into the db.
+        // Insert a run into the db
         Run run = insertRun();
         // Start tracking the run
         startTrackingRun(run);
         return run;
+    }
+
+    public void startTrackingRun(Run run) {
+        // Keep the ID
+        mCurrentRunId = run.getId();
+        // Store it in shared preferences
+        mPrefs.edit().putLong(PREF_CURRENT_RUN_ID, mCurrentRunId).commit();
+        // Start location updates
+        startLocationUpdates();
+    }
+
+    public void stopRun() {
+        stopLocationUpdates();
+        mCurrentRunId = -1;
+        mPrefs.edit().remove(PREF_CURRENT_RUN_ID).commit();
     }
 
     private Run insertRun() {
@@ -106,44 +112,36 @@ public class RunManager {
         return run;
     }
 
-    public void insertLocation(Location location) {
-        if (mCurrentId != -1) {
-            mHelper.insertLocation(mCurrentId, location);
-        } else {
-            Log.e(TAG, "Location received with on tracking run; ignoring.");
-        }
+    public Run getRun(long id) {
+        Run run = null;
+        RunCursor cursor = mHelper.queryRun(id);
+        cursor.moveToFirst();
+
+        // If you got a row, get a run
+        if (!cursor.isAfterLast())
+            run = cursor.getRun();
+        cursor.close();
+        return run;
     }
 
-    public void startTrackingRun(Run run) {
-        // Keep the ID
-        mCurrentId = run.getId();
-        // Store it in shared preferences
-        mPrefs.edit().putLong(PREF_CURRENT_RUN_ID, mCurrentId).commit();
-        // Start location updates
-        startLocationUpdates();
-    }
-
-    public void stopRun() {
-        stopLocationUpdates();
-        mCurrentId = -1;
-        mPrefs.edit().remove(PREF_CURRENT_RUN_ID).commit();
+    public boolean isTrackingRun(Run run) {
+        return run != null && run.getId() == mCurrentRunId;
     }
 
     public RunCursor queryRuns() {
         return mHelper.queryRuns();
     }
 
-    public Run getRun(long id) {
-        Run run = null;
-        RunCursor cursor = mHelper.queryRun(id);
-        cursor.moveToFirst();
+    public void insertLocation(Location loc) {
+        if (mCurrentRunId != -1) {
+            mHelper.insertLocation(mCurrentRunId, loc);
+        } else {
+            Log.e(TAG, "Location received with no tracking run; ignoring");
+        }
+    }
 
-        // If you got a row, get a run.
-        if (!cursor.isAfterLast())
-            run = cursor.getRun();
-        cursor.close();
-
-        return run;
+    public LocationCursor queryLocationsForRun(long runId) {
+        return mHelper.queryLocationsForRun(runId);
     }
 
     public Location getLastLocationForRun(long runId) {
@@ -151,16 +149,10 @@ public class RunManager {
         LocationCursor cursor = mHelper.queryLastLocationForRun(runId);
         cursor.moveToFirst();
 
-        // If you got a row, get a location.
+        // If you get a row, get a location
         if (!cursor.isAfterLast())
-            location = cursor.getlLocation();
+            location = cursor.getLocation();
         cursor.close();
-
         return location;
     }
-
-    public LocationCursor queryLocationsForRun(long runId) {
-        return mHelper.queryLocationsForRun(runId);
-    }
-
 }

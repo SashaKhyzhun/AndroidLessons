@@ -27,7 +27,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 
 
-
 public class RunMapFragment extends SupportMapFragment
         implements LoaderCallbacks<Cursor>{
     private static final String ARG_RUN_ID = "RUN_ID";
@@ -87,7 +86,7 @@ public class RunMapFragment extends SupportMapFragment
         // Iterate over the locations
         mLocationCursor.moveToFirst();
         while (!mLocationCursor.isAfterLast()) {
-            Location loc = mLocationCursor.getlLocation();
+            Location loc = mLocationCursor.getLocation();
             LatLng latLng = new LatLng(loc.getLatitude(), loc.getLongitude());
 
             Resources r = getResources();

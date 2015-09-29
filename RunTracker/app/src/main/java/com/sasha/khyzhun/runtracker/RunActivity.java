@@ -3,9 +3,9 @@ package com.sasha.khyzhun.runtracker;
 import android.support.v4.app.Fragment;
 
 public class RunActivity extends SingleFragmentActivity {
-
-    /** Ключ для передачи индетификатора серии в формате long **/
-    public static final String EXTRA_RUN_ID = "com.sasha.khyzhun.runtracker.run_id";
+    /** A key for passing a run ID as a long */
+    public static final String EXTRA_RUN_ID =
+            "com.sasha.khyzhun.runtracker.run_id";
 
     @Override
     protected Fragment createFragment() {
@@ -16,5 +16,4 @@ public class RunActivity extends SingleFragmentActivity {
             return new RunFragment();
         }
     }
-
 }

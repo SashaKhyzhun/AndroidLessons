@@ -15,5 +15,4 @@ public class RunLoader extends DataLoader<Run> {
     public Run loadInBackground() {
         return RunManager.get(getContext()).getRun(mRunId);
     }
-
 }
