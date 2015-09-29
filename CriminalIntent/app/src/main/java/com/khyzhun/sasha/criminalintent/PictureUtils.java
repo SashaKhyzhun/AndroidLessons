@@ -14,7 +14,7 @@ public class PictureUtils {
      */
 
     @SuppressWarnings("deprecation")
-    public static BitmapDrawable setScaleDrawable(Activity a, String path) {
+    public static BitmapDrawable getScaledDrawable(Activity a, String path) {
         Display display = a.getWindowManager().getDefaultDisplay();
         float destWidth = display.getWidth();
         float destHeight = display.getHeight();

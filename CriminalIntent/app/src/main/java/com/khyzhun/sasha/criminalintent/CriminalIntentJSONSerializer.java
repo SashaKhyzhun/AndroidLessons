@@ -58,21 +58,31 @@ public class CriminalIntentJSONSerializer {
     }
 
     public List<Crime> loadCrimes() throws IOException, JSONException {
-        List<Crime> crimes = new ArrayList<Crime>();
+        ArrayList<Crime> crimes = new ArrayList<Crime>();
         BufferedReader reader = null;
-
         try {
-            InputStream inputStream = context.openFileInput(fileName);
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-            JSONArray jsonArray = readCrimesFromFile(reader);
-
-            populateCrimes(crimes, jsonArray);
-        } finally {
-            if (reader != null) {
-                reader.close();
+            // Открытие и чтение файла в StringBuilder
+            InputStream in = context.openFileInput(fileName);
+            reader = new BufferedReader(new InputStreamReader(in));
+            StringBuilder jsonString = new StringBuilder();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                // Line breaks are omitted and irrelevant
+                jsonString.append(line);
             }
+            // Разбор JSON с использованием JSONTokener
+            JSONArray array = (JSONArray) new JSONTokener(jsonString.toString())
+                    .nextValue();
+            // Построение массива объектов Crime по данным JSONObject
+            for (int i = 0; i < array.length(); i++) {
+                crimes.add(new Crime(array.getJSONObject(i)));
+            }
+        } catch (FileNotFoundException e) {
+            // Происходит при начале "с нуля"; не обращайте внимания
+        } finally {
+            if (reader != null)
+                reader.close();
         }
-
         return crimes;
     }
 

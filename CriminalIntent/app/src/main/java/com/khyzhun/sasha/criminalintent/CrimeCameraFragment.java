@@ -1,6 +1,7 @@
 package com.khyzhun.sasha.criminalintent;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,15 +9,20 @@ import android.util.Log;
 import android.view.*;
 import android.widget.Button;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 public class CrimeCameraFragment extends Fragment {
 
     private static final String TAG = "CrimeCameraFragment";
+    public static final String EXTRA_PHOTO_FILENAME =
+            "com.khyzhun.sasha.criminalintent.photo_filename";
 
     private Camera camera;
     private SurfaceView surfaceView;
+    private View mProgressContainer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
@@ -32,6 +38,42 @@ public class CrimeCameraFragment extends Fragment {
 
         return view;
     }
+
+    private Camera.ShutterCallback mShutterCallback = new Camera.ShutterCallback() {
+        public void onShutter() {
+            // Отображение индикатора прогресса
+            mProgressContainer.setVisibility(View.VISIBLE);
+        }
+    };
+
+    private Camera.PictureCallback mJpegCallback = new Camera.PictureCallback() {
+        public void onPictureTaken(byte[] data, Camera camera) {
+            // Создание имени файла
+            String filename = UUID.randomUUID().toString() + ".jpg";
+            // Сохранение данных jpeg на диске
+            FileOutputStream os = null;
+            boolean success = true;
+            try {
+                os = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
+                os.write(data);
+            } catch (Exception e) {
+                Log.e(TAG, "Error writing to file " + filename, e);
+                success = false;
+            } finally {
+                try {
+                    if (os != null)
+                        os.close();
+                } catch (Exception e) {
+                    Log.e(TAG, "Error closing file " + filename, e);
+                    success = false;
+                }
+            }
+            if (success) {
+                Log.i(TAG, "JPEG saved at " + filename);
+            }
+            getActivity().finish();
+        }
+    };
 
     private SurfaceHolder.Callback createSurfaceHolderCallback() {
         return new SurfaceHolder.Callback() {
@@ -134,7 +176,7 @@ public class CrimeCameraFragment extends Fragment {
 
 
     private void wireTakePictureButton(View view) {
-        Button takePictureButton = (Button)view.findViewById(R.id.crime_camera_takePictureButton);
+        Button takePictureButton = (Button) view.findViewById(R.id.crime_camera_takePictureButton);
         takePictureButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 getActivity().finish();

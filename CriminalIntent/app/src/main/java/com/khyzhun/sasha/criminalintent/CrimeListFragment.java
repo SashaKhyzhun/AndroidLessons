@@ -1,6 +1,5 @@
 package com.khyzhun.sasha.criminalintent;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -210,7 +209,7 @@ public class CrimeListFragment extends ListFragment {
         private void populateDate(View convertView, Crime crime) {
             TextView dateTextView = (TextView)convertView.findViewById(R.id.crime_list_item_dateTextView);
             SimpleDateFormat dateFormatter = getSimpleDateFormat();
-            dateTextView.setText(dateFormatter.format(crime.getDiscoveredOn()));
+            dateTextView.setText(dateFormatter.format(crime.getmDate()));
         }
 
         private SimpleDateFormat getSimpleDateFormat() {

@@ -34,10 +34,9 @@ public class ImageFragment extends DialogFragment {
 
         mImageView = new ImageView(getActivity());
         String path = (String)getArguments().getSerializable(EXTRA_IMAGE_PATH);
-        BitmapDrawable image = PictureUtils.setScaleDrawable(getActivity(), path);
+        BitmapDrawable image = PictureUtils.getScaledDrawable(getActivity(), path);
 
         mImageView.setImageDrawable(image);
-
 
         return mImageView;
     }

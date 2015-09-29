@@ -25,4 +25,5 @@ public abstract class SingleFragmentActivity extends ActionBarActivity {
     }
 
     protected abstract Fragment createFragment();
+
 }
