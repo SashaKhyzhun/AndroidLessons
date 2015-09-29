@@ -32,8 +32,10 @@ public class Crime {
         this.title = json.getString(JSON_TITLE);
         this.solved = json.getBoolean(JSON_SOLVED);
         this.mDate = new Date(json.getLong(JSON_DATE));
+        if (json.has(JSON_PHOTO))
+            mPhoto = new Photo(json.getJSONObject(JSON_PHOTO));
+        if (json.has(JSON_SUSPECT))
         this.mSuspect = json.getString(JSON_SUSPECT);
-        this.mPhoto = new Photo(json.getJSONObject(JSON_PHOTO));
     }
 
     public UUID getId() {
@@ -48,20 +50,12 @@ public class Crime {
         return this.title;
     }
 
-    public Date getmDate() {
+    public Date getDate() {
         return mDate;
     }
 
-    public String getSuspect() {
-        return mSuspect;
-    }
-
-    public String setSuspect(String suspect) {
-        return mSuspect;
-    }
-
-    public void setmDate(Date mDate) {
-        this.mDate = mDate;
+    public void setDate(Date date) {
+        this.mDate = date;
     }
 
     public boolean isSolved() {
@@ -70,6 +64,18 @@ public class Crime {
 
     public void setSolved(boolean solved) {
         this.solved = solved;
+    }
+
+    public void setPhoto(Photo p) {
+        mPhoto = p;
+    }
+
+    public String getSuspect() {
+        return mSuspect;
+    }
+
+    public void setSuspect(String suspect) {
+        mSuspect = suspect;
     }
 
     @Override
@@ -83,19 +89,7 @@ public class Crime {
         jsonObject.put(JSON_TITLE, this.title);
         jsonObject.put(JSON_SOLVED, this.solved);
         jsonObject.put(JSON_DATE, this.mDate.getTime());
-        jsonObject.put(JSON_SUSPECT, this.mSuspect);
-        if (mPhoto != null)
-        jsonObject.put(JSON_PHOTO, mPhoto.toJSON());
 
         return jsonObject;
     }
-
-    public Photo getPhoto() {
-        return mPhoto;
-    }
-
-    public void setPhoto(Photo p) {
-        mPhoto = p;
-    }
-
 }

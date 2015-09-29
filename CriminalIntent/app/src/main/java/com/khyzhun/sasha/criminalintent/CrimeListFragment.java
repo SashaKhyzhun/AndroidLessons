@@ -209,7 +209,7 @@ public class CrimeListFragment extends ListFragment {
         private void populateDate(View convertView, Crime crime) {
             TextView dateTextView = (TextView)convertView.findViewById(R.id.crime_list_item_dateTextView);
             SimpleDateFormat dateFormatter = getSimpleDateFormat();
-            dateTextView.setText(dateFormatter.format(crime.getmDate()));
+            dateTextView.setText(dateFormatter.format(crime.getDate()));
         }
 
         private SimpleDateFormat getSimpleDateFormat() {
