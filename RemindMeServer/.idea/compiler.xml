@@ -22,11 +22,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="com.khyzhun.sasha.server" />
+        <module name="RemindMeServer" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="com.khyzhun.sasha.server" target="1.5" />
+      <module name="RemindMeServer" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>
