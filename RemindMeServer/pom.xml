@@ -7,6 +7,7 @@
     <groupId>com.khyzhun.sasha.server</groupId>
     <artifactId>com.khyzhun.sasha.server</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
 
     <dependencies>
         <dependency>
