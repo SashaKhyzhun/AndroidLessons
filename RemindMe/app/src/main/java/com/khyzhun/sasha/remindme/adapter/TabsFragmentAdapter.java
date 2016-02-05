@@ -32,7 +32,7 @@ public class TabsFragmentAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-       return tabs.get(position);
+        return tabs.get(position);
     }
 
     @Override
