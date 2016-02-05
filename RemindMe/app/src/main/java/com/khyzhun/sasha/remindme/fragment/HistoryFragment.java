@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HistoryFragment extends AbstractTabFragment {
-
     private static final int LAYOUT = R.layout.fragment_history;
 
     public static HistoryFragment getInstance(Context context) {
@@ -35,7 +34,7 @@ public class HistoryFragment extends AbstractTabFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(LAYOUT, container, false);
 
-        RecyclerView rv = (RecyclerView)view.findViewById(R.id.recycleView);
+        RecyclerView rv = (RecyclerView) view.findViewById(R.id.recycleView);
         rv.setLayoutManager(new LinearLayoutManager(context));
         rv.setAdapter(new RemindListAdapter(createMockRemindListData()));
 
@@ -53,7 +52,6 @@ public class HistoryFragment extends AbstractTabFragment {
 
         return data;
     }
-
 
     public void setContext(Context context) {
         this.context = context;

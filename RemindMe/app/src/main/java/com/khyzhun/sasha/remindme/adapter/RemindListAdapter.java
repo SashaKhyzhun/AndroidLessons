@@ -39,7 +39,6 @@ public class RemindListAdapter extends RecyclerView.Adapter<RemindListAdapter.Re
     }
 
     public static class RemindViewHolder extends RecyclerView.ViewHolder {
-
         CardView cardView;
         TextView title;
 
@@ -50,6 +49,5 @@ public class RemindListAdapter extends RecyclerView.Adapter<RemindListAdapter.Re
             title = (TextView) itemView.findViewById(R.id.title);
         }
     }
-
 
 }
