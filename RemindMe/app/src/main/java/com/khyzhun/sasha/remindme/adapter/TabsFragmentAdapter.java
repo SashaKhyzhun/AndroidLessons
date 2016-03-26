@@ -21,13 +21,15 @@ public class TabsFragmentAdapter extends FragmentPagerAdapter {
 
     private Map<Integer, AbstractTabFragment> tabs;
     private Context context;
+
     private List<RemindDTO> data;
+
     private HistoryFragment historyFragment;
 
-    public TabsFragmentAdapter(Context context, FragmentManager fm) {
+    public TabsFragmentAdapter(Context context, FragmentManager fm, List<RemindDTO> data) {
         super(fm);
+        this.data = data;
         this.context = context;
-        this.data = new ArrayList<>();
         initTabsMap(context);
     }
 
@@ -47,9 +49,8 @@ public class TabsFragmentAdapter extends FragmentPagerAdapter {
     }
 
     private void initTabsMap(Context context) {
-        historyFragment = HistoryFragment.getInstance(context, data);
-
         tabs = new HashMap<>();
+        historyFragment = HistoryFragment.getInstance(context, data);
         tabs.put(0, historyFragment);
         tabs.put(1, IdeasFragment.getInstance(context));
         tabs.put(2, TodoFragment.getInstance(context));
@@ -58,6 +59,6 @@ public class TabsFragmentAdapter extends FragmentPagerAdapter {
 
     public void setData(List<RemindDTO> data) {
         this.data = data;
-        historyFragment.refreshData(data);
+        historyFragment.refreshList(data);
     }
 }

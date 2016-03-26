@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private ViewPager viewPager;
+
     private TabsFragmentAdapter adapter;
 
     @Override
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle(R.string.app_name);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
-            public boolean onMenuItemClick(MenuItem item) {
+            public boolean onMenuItemClick(MenuItem menuItem) {
                 return false;
             }
         });
@@ -55,20 +56,21 @@ public class MainActivity extends AppCompatActivity {
 
     private void initTabs() {
         viewPager = (ViewPager) findViewById(R.id.viewPager);
-        adapter = new TabsFragmentAdapter(this, getSupportFragmentManager());
+        adapter = new TabsFragmentAdapter(getApplicationContext(), getSupportFragmentManager(), new ArrayList<RemindDTO>());
         viewPager.setAdapter(adapter);
 
         new RemindMeTask().execute();
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
+
+
     }
 
     private void initNavigationView() {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
-                R.string.view_navigation_open, R.string.view_navigation_close);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.view_navigation_open, R.string.view_navigation_close);
         drawerLayout.setDrawerListener(toggle);
         toggle.syncState();
 
@@ -97,16 +99,15 @@ public class MainActivity extends AppCompatActivity {
             RestTemplate template = new RestTemplate();
             template.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
-
-            return template.getForObject(Constants.URL.GET_REMIND_ITEM, RemindDTO.class);
+            return template.getForObject(Constants.URL.GET_REMIND, RemindDTO.class);
         }
 
         @Override
         protected void onPostExecute(RemindDTO remindDTO) {
-            List<RemindDTO> list = new ArrayList<>();
-            list.add(remindDTO);
-            adapter.setData(list);
+            List<RemindDTO> data = new ArrayList<>();
+            data.add(remindDTO);
+
+            adapter.setData(data);
         }
     }
-
 }

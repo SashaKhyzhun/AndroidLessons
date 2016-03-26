@@ -1,30 +1,28 @@
 package com.khyzhun.sasha.remindme.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+//Data transfer object
 import java.util.Date;
 
-//Data transfer object
 public class RemindDTO {
 
-    private String id;
+    private long id;
     private String title;
     private Date remindDate;
+
+    public RemindDTO(String title) {
+        this.title = title;
+    }
 
     //обязательно должен быть пустой, потому что когда мы создаем новый конструктор,
     // то конструктор по умолчанию - перетирается
     public RemindDTO() {
     }
 
-    public RemindDTO(String title) {
-        this.title = title;
-    }
-
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 

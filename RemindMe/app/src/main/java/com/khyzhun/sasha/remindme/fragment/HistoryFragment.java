@@ -17,17 +17,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HistoryFragment extends AbstractTabFragment {
+
     private static final int LAYOUT = R.layout.fragment_history;
 
     private List<RemindDTO> data;
+
     private RemindListAdapter adapter;
 
     public static HistoryFragment getInstance(Context context, List<RemindDTO> data) {
         Bundle args = new Bundle();
         HistoryFragment fragment = new HistoryFragment();
         fragment.setArguments(args);
-        fragment.setData(data);
         fragment.setContext(context);
+        fragment.setData(data);
         fragment.setTitle(context.getString(R.string.tab_item_history));
 
         return fragment;
@@ -40,10 +42,16 @@ public class HistoryFragment extends AbstractTabFragment {
 
         RecyclerView rv = (RecyclerView) view.findViewById(R.id.recycleView);
         rv.setLayoutManager(new LinearLayoutManager(context));
+
         adapter = new RemindListAdapter(data);
         rv.setAdapter(adapter);
 
         return view;
+    }
+
+    public void refreshList(List<RemindDTO> data) {
+        adapter.setData(data);
+        adapter.notifyDataSetChanged();
     }
 
     public void setContext(Context context) {
@@ -54,8 +62,5 @@ public class HistoryFragment extends AbstractTabFragment {
         this.data = data;
     }
 
-    public void refreshData(List<RemindDTO> dataList) {
-        adapter.setData(data);
-        adapter.notifyDataSetChanged();
-    }
+
 }
